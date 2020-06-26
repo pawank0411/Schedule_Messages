@@ -18,7 +18,6 @@ public  class AlramReceiver extends BroadcastReceiver {
         String phone = sharedPreferences.getString("phone", null);
         String message = sharedPreferences.getString("message", null);
 
-        Toast.makeText(context, "recieve", Toast.LENGTH_SHORT).show();
         PackageManager packageManager = context.getPackageManager();
         Intent i = new Intent(Intent.ACTION_VIEW);
         try {

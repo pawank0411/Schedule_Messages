@@ -13,6 +13,7 @@
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <action android:name="android.intent.action.VIEW" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -21,18 +22,19 @@
             android:label="Accessibility Service"
             android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE">
 
-        <meta-data
-            android:name="android.accessibilityservice"
-            android:resource="@xml/whatsapp_service"/>
+            <meta-data
+                android:name="android.accessibilityservice"
+                android:resource="@xml/whatsapp_service" />
 
-        <intent-filter>
-            <action android:name="android.accessibilityservice.AccessibilityService"/>
-        </intent-filter>
+            <intent-filter>
+                <action android:name="android.accessibilityservice.AccessibilityService" />
+            </intent-filter>
         </service>
 
-        <receiver android:name=".AlramReceiver"
+        <receiver
+            android:name=".AlramReceiver"
             android:enabled="true"
-            android:exported="false"/>
+            android:exported="false" />
     </application>
 
 </manifest>

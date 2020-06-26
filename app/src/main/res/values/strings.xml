@@ -1,4 +1,4 @@
 <resources>
     <string name="app_name">schedule_message</string>
-    <string name="whatsapp_suffix">_SM</string>
+    <string name="whatsapp_suffix">"\n\n—\n_Sent by Schedule messenger_"</string>
 </resources>
