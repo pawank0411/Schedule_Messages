@@ -81,7 +81,7 @@ public class MainActivity extends AppCompatActivity {
                     editor.putString("message", main_mes);
                     editor.apply();
 
-                    Intent intent = new Intent(MainActivity.this, AlramReceiver.class);
+                    Intent intent = new Intent(MainActivity.this, AlarmReceiver.class);
                     PendingIntent pendingIntent = PendingIntent.getBroadcast(MainActivity.this, 100, intent, PendingIntent.FLAG_UPDATE_CURRENT);
                     AlarmManager alarmManager = (AlarmManager) MainActivity.this.getSystemService(ALARM_SERVICE);
                     if (alarmManager != null) {
