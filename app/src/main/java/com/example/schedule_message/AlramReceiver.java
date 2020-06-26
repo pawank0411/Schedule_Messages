@@ -11,14 +11,12 @@ import android.widget.Toast;
 import java.net.URLEncoder;
 
 public  class AlramReceiver extends BroadcastReceiver {
-    private String phone;
-    private String message;
     @Override
     public void onReceive(Context context, Intent intent) {
         SharedPreferences sharedPreferences = context.getSharedPreferences("Details", 0);
 
-        phone = sharedPreferences.getString("phone", null);
-        message = sharedPreferences.getString("message", null);
+        String phone = sharedPreferences.getString("phone", null);
+        String message = sharedPreferences.getString("message", null);
 
         Toast.makeText(context, "recieve", Toast.LENGTH_SHORT).show();
         PackageManager packageManager = context.getPackageManager();
