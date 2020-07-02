@@ -17,6 +17,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.schedule_message.model.MessageData;
+import com.google.gson.Gson;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -27,22 +28,18 @@ public class ScheduleMessages extends AppCompatActivity {
     private Calendar calendar;
     private int hour, min;
     private EditText phone, message;
-    private ArrayList<MessageData> messageArrayList;
+    private ArrayList<MessageData> messageArrayList = new ArrayList<>();
 
     @Override
-    public void onCreate(@Nullable Bundle savedInstanceState, @Nullable PersistableBundle persistentState) {
-        super.onCreate(savedInstanceState, persistentState);
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_schedule_message);
-
-
         Button send = findViewById(R.id.send);
         phone = findViewById(R.id.phn);
         message = findViewById(R.id.message);
 
         SharedPreferences sharedPreferences = getSharedPreferences("Details", 0);
         final SharedPreferences.Editor editor = sharedPreferences.edit();
-
-
         timePicker1 = findViewById(R.id.timePicker1);
         calendar = Calendar.getInstance();
 
@@ -71,8 +68,16 @@ public class ScheduleMessages extends AppCompatActivity {
                             calendar.set(Calendar.MINUTE, min);
                             Toast.makeText(ScheduleMessages.this, "The message is being schedule for " + hour + ":" + min, Toast.LENGTH_SHORT).show();
                             alarmManager.setExact(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
-
-                            messageArrayList.add(new MessageData(phone.getText().toString(), message.getText().toString(), hour + ":" + min));
+                            MessageData messageData = new MessageData(phone.getText().toString(),
+                                    message.getText().toString(), hour + ":" + min);
+                            messageArrayList.add(messageData);
+                            Toast.makeText(ScheduleMessages.this, String.valueOf(messageArrayList.size()), Toast.LENGTH_SHORT).show();
+                            Intent intent1 = new Intent(ScheduleMessages.this, MainActivity.class);
+//                            Bundle bundle = new Bundle();
+//                            bundle.putSerializable("TASKS", messageArrayList);
+//                            intent1.putExtra("BUNDLE",bundle);
+                            saveAttendance(messageArrayList);
+                            startActivity(intent1);
                         }
                     }
                 } else {
@@ -81,7 +86,12 @@ public class ScheduleMessages extends AppCompatActivity {
             }
         });
     }
-
+    public void saveAttendance(ArrayList attendanceDataArrayList) {
+        Gson gson = new Gson();
+        String json = gson.toJson(attendanceDataArrayList);
+        SharedPreferences sharedPreferences = getSharedPreferences("PREF",MODE_PRIVATE);
+        sharedPreferences.edit().putString("MessageTask", json).apply();
+    }
 
     public void showTime(int hour, int min) {
         String format = "";
