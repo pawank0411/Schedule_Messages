@@ -25,7 +25,10 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.schedule_message.adapter.ListAdapter;
 import com.example.schedule_message.model.MessageData;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Calendar;
 
@@ -36,14 +39,16 @@ public class MainActivity extends AppCompatActivity {
     private int hour, min;
     private EditText phone, message;
     private Button send;
-    private RecyclerView recyclerView;
+    private SharedPreferences sharedPreferences;
+    private ListAdapter listAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         FloatingActionButton add_task = findViewById(R.id.add_task);
-        recyclerView = findViewById(R.id.recycler_view);
+        RecyclerView recyclerView = findViewById(R.id.recycler_view);
+        sharedPreferences = getSharedPreferences("Details", 0);
 
         if (!isAccessibilityOn(this)) {
             new AlertDialog.Builder(this)
@@ -65,6 +70,21 @@ public class MainActivity extends AppCompatActivity {
                         }
                     }).create().show();
         }
+        //getting data from shared pref
+        Gson gson = new Gson();
+        String json = sharedPreferences.getString("MessageTask", null);
+        Type type = new TypeToken<ArrayList<MessageData>>() {
+        }.getType();
+        messageDataArrayList = gson.fromJson(json, type);
+
+        if (messageDataArrayList == null) {
+            messageDataArrayList = new ArrayList<>();
+        }
+        listAdapter = new ListAdapter(messageDataArrayList, MainActivity.this);
+        recyclerView.hasFixedSize();
+        recyclerView.setAdapter(listAdapter);
+        recyclerView.setLayoutManager(new LinearLayoutManager(MainActivity.this));
+
 
         add_task.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -75,28 +95,22 @@ public class MainActivity extends AppCompatActivity {
                 alert.setView(dialogview);
                 AlertDialog alertDialog = alert.create();
                 alertDialog.show();
-
                 phone = dialogview.findViewById(R.id.phn);
                 message = dialogview.findViewById(R.id.message);
                 send = dialogview.findViewById(R.id.send);
-
-                SharedPreferences sharedPreferences = getSharedPreferences("Details", 0);
-                final SharedPreferences.Editor editor = sharedPreferences.edit();
                 timePicker1 = dialogview.findViewById(R.id.timePicker1);
                 calendar = Calendar.getInstance();
 
                 hour = calendar.get(Calendar.HOUR_OF_DAY);
                 min = calendar.get(Calendar.MINUTE);
-                showTime(hour, min);
 
                 send.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
                         if (!phone.getText().toString().isEmpty() && !message.getText().toString().isEmpty()) {
-                            editor.putString("phone", phone.getText().toString());
+                            sharedPreferences.edit().putString("phone", phone.getText().toString()).apply();
                             String main_mes = message.getText().toString() + " " + getApplicationContext().getString(R.string.whatsapp_suffix);
-                            editor.putString("message", main_mes);
-                            editor.apply();
+                            sharedPreferences.edit().putString("message", main_mes).apply();
 
                             Intent intent = new Intent(MainActivity.this, AlarmReceiver.class);
                             PendingIntent pendingIntent = PendingIntent.getBroadcast(MainActivity.this, 100, intent, PendingIntent.FLAG_UPDATE_CURRENT);
@@ -112,11 +126,11 @@ public class MainActivity extends AppCompatActivity {
                                     MessageData messageData = new MessageData(phone.getText().toString(),
                                             message.getText().toString(), hour + ":" + min);
                                     messageDataArrayList.add(messageData);
-                                    ListAdapter listAdapter = new ListAdapter(messageDataArrayList, MainActivity.this);
-                                    recyclerView.hasFixedSize();
-                                    recyclerView.setAdapter(listAdapter);
+                                    //saving to shared pref
+                                    Gson gson = new Gson();
+                                    String json = gson.toJson(messageDataArrayList);
+                                    sharedPreferences.edit().putString("MessageTask", json).apply();
                                     listAdapter.notifyDataSetChanged();
-                                    recyclerView.setLayoutManager(new LinearLayoutManager(MainActivity.this));
                                 }
                             }
                         } else {
@@ -124,7 +138,6 @@ public class MainActivity extends AppCompatActivity {
                         }
                     }
                 });
-
             }
         });
 
@@ -154,20 +167,5 @@ public class MainActivity extends AppCompatActivity {
             }
         }
         return false;
-    }
-
-    public void showTime(int hour, int min) {
-        String format = "";
-        if (hour == 0) {
-            hour += 12;
-            format = "AM";
-        } else if (hour == 12) {
-            format = "PM";
-        } else if (hour > 12) {
-            hour -= 12;
-            format = "PM";
-        } else {
-            format = "AM";
-        }
     }
 }
