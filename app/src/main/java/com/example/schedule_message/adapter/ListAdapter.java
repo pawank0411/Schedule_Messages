@@ -1,6 +1,7 @@
 package com.example.schedule_message.adapter;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -35,14 +36,13 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
 
     @Override
     public void onBindViewHolder(@NonNull ListAdapter.ViewHolder holder, int position) {
-        holder.phoneNumber.setText("+91 " + messageDataArrayList.get(position).getPhoneNumber());
+        holder.phoneNumber.setText("+" + messageDataArrayList.get(position).getPhoneNumber());
         holder.message.setText(messageDataArrayList.get(position).getMessage());
         holder.dateTime.setText(messageDataArrayList.get(position).getDateTime());
     }
 
     @Override
     public int getItemCount() {
-        Toast.makeText(mContext, String.valueOf(messageDataArrayList.size()), Toast.LENGTH_SHORT).show();
         return messageDataArrayList.size();
     }
 
