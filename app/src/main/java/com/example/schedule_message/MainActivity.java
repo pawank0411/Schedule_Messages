@@ -85,7 +85,6 @@ public class MainActivity extends AppCompatActivity {
         recyclerView.setAdapter(listAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(MainActivity.this));
 
-
         add_task.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
